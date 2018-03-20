@@ -5,13 +5,61 @@ var express = require('express'),
 var mongo = require('mongodb').MongoClient;
 var assert = require('assert');
 var bodyParser = require('body-parser');
+// mongoose és un mòdul per mongo que permet fer coses xules, com schemas
+var mongoose = require('mongoose');
+
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use('/peliculas', require('./peliculas'));
 
 var url = 'mongodb://localhost:27017/midb';
 
+mongoose.connect(url, function(error) {
+	if (error) {
+		console.log('no se ha podido conectar');
+	}
+});
+
+// Con un esquema, obligamos a que los usuarios tengan una estructura
+// de datos concreta
+var userSchema = new mongoose.Schema({
+	email:{
+		type:String,
+		unique:true,
+		required:true
+	},
+	pass:{
+		type:String,
+		required:true,
+	}
+});
+
+var users = mongoose.model('usuarios', userSchema);
+
 server.listen(8000);
+
+app.post('/signup', function(request, response) {
+	if (request.body.email && request.body.pass && request.body.passConf) {
+		datos = {
+			email:request.body.email,
+			pass: request.body.pass
+		}
+		nuevo = new users(datos);
+		nuevo.save(function(error, data) {
+			if (error) {
+				console.log(error)
+			}
+		});
+	}
+		users.find({}, function(error, data) {
+			if (error) {
+				console.log(error);
+			} else {
+				console.log(data);
+			}
+		});
+		response.sendFile(__dirname + '/index2.html');
+});
 
 app.get('/',function(request,response){
 	console.log('request' + __dirname);
@@ -31,7 +79,7 @@ app.get('/getUsers',function(request,response){
         response.sendFile(__dirname + '/index.html');
 });
 
-app.post('/addUser',function(request,response){
+app.get('/addUser',function(request,response){
         mongo.connect(url, function(err, client) {
                 assert.equal(null, err);
                 db = client.db('midb');
