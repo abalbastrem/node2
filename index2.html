@@ -5,21 +5,21 @@
 		<script src="/socket.io/socket.io.js"></script>
 	</head>
 	<body>
-		<div id='chat'>Hola mundo</div>
+		<!-- <div id='chat'>Hola mundo</div> -->
 
 		ADD:
 		<form action='addUser' method="post">
-			<input id='nombre' type='text' />
-			<input id='email' type='text' />
+			<label>email:</label><input id='email' name='email' type='text'/> <br>
+			<label>pass: </label><input id='pass' name='pass' type='text'/> <br>
 			<button type="submit">envía</button>
 		</form>
 
-		<!-- UPDATE:
-		<form action='updateUser' method="get">
-			<input id='nombre' type='text' />
-			<input id='email' type='text' />
+		UPDATE:
+		<form action='updateUser' method="get"> <!--??? ¿Por qué GET? -->
+			<label>email:</label><input id='email' name='email' type='text' /> <br>
+			<label>pass: </label><input id='pass' name='pass' type='text' /> <br>
 			<button type="submit">envía</button>
-		</form> -->
+		</form>
 
 	</body>
 </html>

@@ -1,11 +1,13 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 
-var url = 'mongodb://localhost:27017/';
+var url = 'mongodb://localhost:27017/test';
 
 var db = mongoose.connect(url,function(error){
 		if (error){
 				console.log('no se ha podido conectar');
+		} else {
+			console.log('conectado a la bbdd');
 		}
 	});
 
@@ -32,6 +34,7 @@ UserSchema.pre('save', function (next) {
   })
 });
 
+//??? ¿Por qué tiene una estructura distinta a la anterior?
 UserSchema.methods.comparePassword = function(candidatePassword, cb) {
 
     bcrypt.compare(candidatePassword, this.pass, function(err, isMatch) {
@@ -40,7 +43,7 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
     });
 };
 
-
+//??? ¿Por qué aquí statics y no métodos?
 UserSchema.statics.getAuthenticated = function(email, password, cb) {
     this.findOne({ email: email }, function(err, user) {
         if (err) return cb(err);
