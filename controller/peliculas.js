@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+var router = express.Router(); // + '/peliculas/'
 // router hereda un nuevo __dirname según la app llame este archivo con require
 
 var indexStr = '<br><a href="/peliculas">INDEX</a>';

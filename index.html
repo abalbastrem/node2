@@ -1,34 +1,16 @@
 <html>
-	<head>
-		<title>Prueba Node2</title>
-		<script src="https://code.jquery.com/jquery.js"></script>
-		<script src="/socket.io/socket.io.js"></script>
-	</head>
-	<body>
-		<div id='chat'>Hola mundo</div>
-
-		<form id='enviaMensaje'>
-			<input id='mensaje' type='text' />
-			<button type='submit'>Envía</button>
-		</form>
-
-	<script>
-		jQuery(function($) {
-			var socket = io.connect();
-			var $form = $('#enviaMensaje');
-			var $mensaje = $('#mensaje');
-			var $chat = $('#chat');
-
-			$form.submit(function(e) {
-				e.preventDefault();
-				socket.emit('enviaMensaje', $mensaje.val());
-				$mensaje.val('');
-			});
-
-			socket.on('nuevoMensaje', function(datos) {
-				$chat.append(datos.msg + '<br>');
-			});
-		});
-
-	</body>
+  <body>
+    <h1>Menú de usuario</h1>
+    <a href="users/login">LOGIN</a><br>
+    <a href="users/logout">LOGOUT</a><br>
+    <a href="users/signup">SIGN UP</a><br>
+    <br>
+    <h1>Menú de películas</h1>
+    <a href="peliculas/list">LIST</a><br>
+    <a href="peliculas/add">ADD</a><br>
+    <a href="peliculas/update">UPDATE</a><br>
+    <a href="peliculas/delete">DELETE</a><br>
+    <a href="peliculas/detail/n">DETAIL</a><br>
+    <a href="peliculas/view/n">VIEW</a><br>
+  </body>
 </html>

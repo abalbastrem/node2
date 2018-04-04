@@ -2,7 +2,6 @@ var express = require('express'),
   app = express(),
   server = require('http').createServer(app),
   io = require('socket.io').listen(server);
-// var request = require('request');
 var mongo = require('mongodb').MongoClient;
 var assert = require('assert');
 var bodyParser = require('body-parser');
@@ -10,34 +9,42 @@ var mongoose = require('mongoose');
 var path = require('path');
 var bcrypt = require('bcrypt');
 
-app.use('/peliculas', require('./peliculas'));
-// Apaño para no afectar a __dirname y tenerlo todo en la raíz
+/// MODEL ///
+var users = require('./model/usuariosmodel');
+var peliculas = require('./model/peliculasmodel');
+/// VIEW ///
+app.set('view engine', 'pug');
+app.set('views', './views');
+/// CONTROLLER ///
+app.use('/peliculas', require('./controller/peliculas'));
+// app.use('/usuarios', require('./controller/usuarios'));
+// Apaño para crear una ruta absoluta para el CSS
 app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(bodyParser.json());
 
-// CONFIG PARA VIEWS
-// app.set('view engine', 'pug');
-// app.set('views', './views');
+// VARS
+var url = 'mongodb://localhost:27017/imdb';
+var midb = 'imdb';
 
-var url = 'mongodb://localhost:27017/test';
-
-var users = require('./usersmodel');
-
+// LOG
 var logger = function(request, response, next) {
   console.log('Request');
   next();
 };
 app.use(logger);
 
+// PORT
 server.listen(8000);
 
-// HANDLERS
+// Para tratar POST
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+
+// HANDLERS SIMPLES
 app.get('/', function(request, response) {
   console.log('request' + __dirname);
-  response.sendFile(__dirname + '/index2.html');
+  response.sendFile(__dirname + '/index.html');
 });
 
 app.get('/signup', function(request, response) {
@@ -50,7 +57,6 @@ app.get('/login', function(request, response) {
   response.sendFile(__dirname + '/login.html');
 });
 
-//??? ¿Esto es un handler? ¿Busca por nombre y no por archivo? ¿Con pug?
 app.get('/recibe', function(request, response) {
   console.log('request' + __dirname);
   response.render('index', {
@@ -59,7 +65,6 @@ app.get('/recibe', function(request, response) {
   });
 
 });
-
 
 // USER MANAGEMENT WITH MODEL AND MONGOOSE
 app.post('/signupUser', function(request, response) {
@@ -71,32 +76,26 @@ app.post('/signupUser', function(request, response) {
       pass: request.body.pass
     }
 
-    console.log(datos.pass);
-    nuevo = new users(datos); //??? ¿Sirve sólo para comprobar 'datos'?
+    console.log(datos);
+    nuevo = new users(datos);
 
     nuevo.save(function(error, data) {
       if (error) {
         console.log(error);
         response.write('no se ha podido enviar');
+        console.log('no se ha podido enviar');
       }
     });
+
   }
 
-  users.find({}, function(err, data) { //??? ¿Qué es lo que pretende?
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(data);
-    }
-
-  });
   response.sendFile(__dirname + '/index.html');
 
 });
 
 app.post('/loginUser', function(request, response) {
 
-  console.log("loggin in...");
+  console.log("logging in...");
 
   if (request.body.email && request.body.pass) {
     console.log("body exists");
@@ -111,6 +110,7 @@ app.post('/loginUser', function(request, response) {
         return;
       } else console.log('error en el login');
     });
+    // FINDS ALL USERS
     /* users.find({},function(err, data){
              if (err){
                     console.log(err);
@@ -125,32 +125,31 @@ app.post('/loginUser', function(request, response) {
 });
 
 // GET, ADD, UPDATE, DELETE. Métodos sin mongoose
-app.get('/getUsers2', function(request, response) {
+app.get('/getUsers', function(request, response) {
 
   mongo.connect(url, function(err, client) {
     assert.equal(null, err);
-    db = client.db('midb');
-    db.collection('users').find().toArray(function(err, result) {
-      //??? ¿Por qué 'users' y no 'usuarios'?
+    db = client.db(midb);
+    db.collection('usuarios').find().toArray(function(err, result) {
       console.log(result);
       client.close();
     });
   });
-  response.sendFile(__dirname + '/index2.html');
+  response.sendFile(__dirname + '/login.html');
 });
 
-app.get('/addUser', function(request, response) {
+app.post('/addUser', function(request, response) {
   mongo.connect(url, function(err, client) {
     assert.equal(null, err);
-    db = client.db('midb');
+    db = client.db(midb);
     item = {
       // email: "a@gmail.com",
       // pass: "1234"
-      email: request.request.email,
-      pass: request.request.pass
+      email: request.body.email,
+      pass: request.body.pass
     };
-    console.log(request.query);
-    db.collection('users').insertOne(item, function(err, result) {
+    console.log(request.body);
+    db.collection('usuarios').insertOne(item, function(err, result) {
       console.log('insertado');
       client.close();
     });
@@ -162,7 +161,7 @@ app.get('/updateUser', function(request, response) {
 
   mongo.connect(url, function(err, client) {
     assert.equal(null, err);
-    db = client.db('midb');
+    db = client.db(midb);
     where = {
       algo: {
         $exist: true
@@ -175,7 +174,7 @@ app.get('/updateUser', function(request, response) {
         email: 'manolo@gmail.com'
       }
     }
-    db.collection('users').updateMany(where, nuevo, function(err, result) {
+    db.collection('usuarios').updateMany(where, nuevo, function(err, result) {
       console.log('updated');
       client.close();
     });
@@ -187,11 +186,11 @@ app.get('/removeUser', function(request, response) {
 
   mongo.connect(url, function(err, client) {
     assert.equal(null, err);
-    db = client.db('midb');
+    db = client.db(midb);
     query = {
       email: 'aaaa@aaaa.com'
     };
-    db.collection('users').deleteOne(query, function(err, result) { //??? ¿Por qué collection y no 'users'?
+    db.collection('usuarios').deleteOne(query, function(err, result) {
       console.log('deleted');
       client.close();
     });
@@ -200,10 +199,11 @@ app.get('/removeUser', function(request, response) {
 });
 
 
-io.sockets.on('connection', function(socket) {
-  socket.on('enviaMensaje', function(datos) {
-    io.sockets.emit('nuevoMensaje', {
-      msg: datos
-    });
-  });
-});
+// CHAT
+// io.sockets.on('connection', function(socket) {
+//   socket.on('enviaMensaje', function(datos) {
+//     io.sockets.emit('nuevoMensaje', {
+//       msg: datos
+//     });
+//   });
+// });
