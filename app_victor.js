@@ -55,7 +55,7 @@ app.get('/signup', function(request, response) {
 
 app.get('/login', function(request, response) {
   console.log('request' + __dirname);
-  response.sendFile(__dirname + '/login.html');
+  response.sendFile(__dirname + '/views/login.html');
 });
 
 app.get('/recibe', function(request, response) {
