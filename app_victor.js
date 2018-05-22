@@ -20,6 +20,7 @@ app.use('/peliculas', require('./controller/peliculas'));
 // app.use('/usuarios', require('./controller/usuarios'));
 // Apaño para crear una ruta absoluta para el CSS
 app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/views', express.static(path.join(__dirname, 'views')));
 
 // VARS
 var url = 'mongodb://localhost:27017/imdb';

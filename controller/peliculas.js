@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router(); // + '/peliculas/'
+var path = require('path');
 // router hereda un nuevo __dirname según la app llame este archivo con require
+const ppath = "/home/users/inf/wiaw2/iaw46994355/node2/";
 
 var indexStr = '<br><a href="/peliculas">INDEX</a>';
 
 router.get('/', function(request, response) {
-  response.sendFile(__dirname + '/index_peliculas.html');
+  // response.sendFile(__dirname + '/index_peliculas.html');
 });
 
 router.get('/login', function(request, response) {
@@ -44,23 +46,24 @@ router.get('/list', function(request, response) {
 });
 
 router.get('/add', function(request, response) {
-  response.sendFile(__dirname + '/add_pelicula.html');
+  console.log('/views/add_pelicula.html');
+  response.sendFile(path.join(__dirname, '../views', 'add_pelicula.html'));
 });
 
 router.get('/update', function(request, response) {
-  response.sendFile(__dirname + '/update_pelicula.html');
+  response.sendFile(path.join(__dirname, '../views', 'update_pelicula.html'));
 });
 
 router.get('/delete', function(request, response) {
-  response.sendFile(__dirname + '/delete_pelicula.html');
+  response.sendFile(path.join(__dirname, '../views', 'delete_pelicula.html'));
 });
 
 router.get('/detail/:n([0-9]+)', function(request, response) {
-  response.send('detalles pelicula concreta' + indexStr);
+  response.send(path.join(__dirname, '../views', 'detail_pelicula.html'));
 });
 
 router.get('/view/:n([0-9]+)', function(request, response) {
-  response.send('general pelicula concreta' + indexStr);
+  response.send(path.join(__dirname, '../views', 'view_pelicula.html'));
 });
 
 module.exports = router;
