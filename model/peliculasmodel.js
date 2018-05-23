@@ -25,29 +25,46 @@ var PeliculaSchema = new mongoose.Schema({
 
 PeliculaSchema.methods.list = function() {
   this.find({}, function(err, peliculas) {
-		if (err) return err;
+    if (err) return err;
     return peliculas;
   })
 };
 
-PeliculaSchema.methods.add = function() {
-  this.find({}, function(err, peliculas) {
-    return peliculas;
+// PeliculaSchema.methods.add = function() {
+//   this.find({}, function(err, peliculas) {
+//     return peliculas;
+//   })
+// };
+
+PeliculaSchema.methods.update = function(datos) {
+  this.where({
+    Codpeli: datos.codpeli
+  }).update({
+    $set: {
+      Sinopsi: datos.sinopsis, Titol: datos.titulo
+    },
+  }, function(err, nAfectadas) {
+    if (err) return err;
+    return nAfectadas;
   })
-};
-
-PeliculaSchema.methods.update = function() {
-  this.findAll()
-
 };
 
 PeliculaSchema.methods.delete = function() {
-  this.findAll()
-
+  this.findOneAndDelete({
+    Codpeli: datos.codigo
+  }, function(err, n) {
+    if (err) return err;
+    return n;
+  })
 };
 
-PeliculaSchema.methods.detail = function(n) {
-  this.findAll()
+PeliculaSchema.methods.detail = function(datos) {
+  this.findOne({
+    Codpeli: datos.codpeli
+  }, function(err, pelicula) {
+    if (err) return err;
+    return pelicula;
+  })
 
 };
 

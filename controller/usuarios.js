@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router(); // + '/peliculas/'
+var router = express.Router(); // + '/usuarios/'
 var path = require('path');
 
 router.get('/', function(request, response) {

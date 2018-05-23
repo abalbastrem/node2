@@ -90,7 +90,7 @@ app.post('/signupUser', function(request, response) {
 
   }
 
-  response.sendFile(__dirname + '/index.html');
+  response.sendFile(__dirname + '/views/index.html');
 
 });
 
