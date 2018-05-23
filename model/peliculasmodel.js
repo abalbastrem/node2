@@ -23,10 +23,19 @@ var PeliculaSchema = new mongoose.Schema({
 });
 
 
-PeliculaSchema.methods.list = function() {
+PeliculaSchema.methods.list = function(cb) {
   this.find({}, function(err, peliculas) {
-    if (err) return err;
-    return peliculas;
+    if (err) return cb(err);
+    return cb(peliculas);
+  })
+};
+
+PeliculaSchema.methods.detail = function(datos, cb) {
+  this.findOne({
+    Codpeli: datos.codpeli
+  }, function(err, pelicula) {
+    if (err) return cb(err);
+    return cb(pelicula);
   })
 };
 
@@ -56,16 +65,6 @@ PeliculaSchema.methods.delete = function() {
     if (err) return err;
     return n;
   })
-};
-
-PeliculaSchema.methods.detail = function(datos) {
-  this.findOne({
-    Codpeli: datos.codpeli
-  }, function(err, pelicula) {
-    if (err) return err;
-    return pelicula;
-  })
-
 };
 
 

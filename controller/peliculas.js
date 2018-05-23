@@ -2,16 +2,12 @@ var express = require('express');
 var router = express.Router(); // + '/peliculas/'
 var path = require('path');
 // router hereda un nuevo __dirname según la app llame este archivo con require
-const ppath = "/home/users/inf/wiaw2/iaw46994355/node2/";
+// const ppath = "/home/users/inf/wiaw2/iaw46994355/node2/";
 var peliculas = require('../model/peliculasmodel');
 
 var indexStr = '<br><a href="/">INDEX</a>';
 
 // HANDLERS
-// router.get('/list', function(request, response) {
-//   response.send('pelicula 1, pelicula 2' + indexStr);
-// });
-
 router.get('/add', function(request, response) {
   console.log('/views/add_pelicula.html');
   response.sendFile(path.join(__dirname, '../views', 'add_pelicula.html'));
@@ -29,8 +25,13 @@ router.get('/delete', function(request, response) {
 router.get('/list', function(request, response) {
   console.log("::::: REQ: " + request.originalUrl);
   console.log("listing peliculas...");
-  var res = peliculas.list();
-  response.write(res + "\n " + indexStr);
+  peliculas.list(function(err, res) {
+    if (err) {
+      throw err;
+    } else {
+      response.write(res + "\n " + indexStr);
+    }
+  })
 });
 
 router.get('/detail/:n([0-9]+)', function(request, response) {
@@ -38,8 +39,13 @@ router.get('/detail/:n([0-9]+)', function(request, response) {
     codpeli: request.params.n
   }
   console.log(datos);
-  var res = peliculas.detail(datos);
-  response.write(res + "\n " + indexStr);
+  peliculas.detail(datos, function(err, res) {
+    if (err) {
+      throw err;
+    } else {
+      response.write(res + "\n " + indexStr);
+    }
+  });
 });
 
 /// METHOD RESPONSES ///
@@ -95,19 +101,3 @@ router.post('/deletePelicula', function(request, response) {
   };
   response.sendFile(path.join(__dirname, '../', 'index.html'));
 });
-
-router.post('/detailPelicula', function(request, response) {
-  console.log("::::: REQ: " + request.originalUrl);
-  console.log("deleting pelicula...");
-  if (request.body.codpeli) {
-    console.log("body exists");
-    datos = {
-      codpeli: request.body.codpeli
-    }
-    console.log(datos);
-    var res = peliculas.detail(datos);
-  };
-  response.write(res + "\n " + indexStr);
-});
-
-module.exports = router;
